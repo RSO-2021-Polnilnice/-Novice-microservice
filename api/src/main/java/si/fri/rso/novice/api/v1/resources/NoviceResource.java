@@ -55,21 +55,27 @@ public class NoviceResource {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
 
-        HttpResponse<JsonNode> uporabnikiResponse = Unirest.get(uporabnikHost.get() + "/v1/uporabniki/emails")
-                .asJson();
+        // HttpResponse<JsonNode> uporabnikiResponse = Unirest.get(uporabnikHost.get() + "/v1/uporabniki/emails").asJson();
+        HttpResponse<JsonNode> uporabnikiResponse = Unirest.get("http://uporabniki-instance:8080/v1/uporabniki/emails").asJson();
 
         System.out.println(uporabnikiResponse.getBody());
 
         JSONArray uporabnikiJson = uporabnikiResponse.getBody().getArray();
 
+        System.out.println(noviceProperties.getUrl());
+        System.out.println(noviceProperties.getApiKey());
+        System.out.println(noviceProperties.getSenderMail());
+
         for (int i = 0; i < uporabnikiJson.length(); i++) {
-            HttpResponse<String> request = Unirest.post("https://api.mailgun.net/v3/" + noviceProperties.getUrl() + "/messages")
+            System.out.println(uporabnikiJson.getJSONObject(i).getString("email"));
+
+            Unirest.post("https://api.mailgun.net/v3/" + noviceProperties.getUrl() + "/messages")
                     .basicAuth("api", noviceProperties.getApiKey())
-                    .field("from", noviceProperties.getSenderMail())
-                    .field("to", uporabnikiJson.getJSONObject(i).getString("email"))
-                    .field("subject", "New charging station")
-                    .field("text", "Hello " + uporabnikiJson.getJSONObject(i).getString("firstName") + " " + uporabnikiJson.getJSONObject(i).getString("lastName") + ". A new charging station has just been added!")
-                    .asString();
+                    .queryString("from", noviceProperties.getSenderMail())
+                    .queryString("to", uporabnikiJson.getJSONObject(i).getString("email"))
+                    .queryString("subject", "New charging station")
+                    .queryString("text", "Hello " + uporabnikiJson.getJSONObject(i).getString("firstName") + " " + uporabnikiJson.getJSONObject(i).getString("lastName") + ". A new charging station has just been added!")
+                    .asJson();
         }
 
         return Response.status(Response.Status.OK).build();
