@@ -29,4 +29,4 @@ docker run -p 8081:8081 --network rsonet -e KUMULUZEE_CONFIG_CONSUL_AGENT=http:/
 
 ## Usage
 
-Put the values inside Consul. Those values will be used when sending emails to subscribers.
+Input the values inside Consul. Those values will be used when sending emails to subscribers.
