@@ -24,7 +24,7 @@ docker build -f .\Dockerfile_with_maven_build -t novice:latest .
 
 Run:
 ```bash
-docker run -p 8081:8081 --network rsonet -e KUMULUZEE_CONFIG_CONSUL_AGENT=http://consul:8500 --name novice-instance novice
+docker run -p 8081:8080 --network rsonet -e KUMULUZEE_CONFIG_CONSUL_AGENT=http://consul:8500 --name novice-instance novice
 ```
 
 ## Usage

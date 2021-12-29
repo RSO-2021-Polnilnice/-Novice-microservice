@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: uporabniki-deployment
+  name: novice-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: uporabniki
+      app: novice
   template:
     metadata:
       labels:
-        app: uporabniki
+        app: novice
     spec:
       containers:
-        - image: rso2021jklk/uporabniki:2021-11-21-23-02-18
-          name: uporabniki
+        - image: rso2021jklk/novice:2021-11-21-23-02-18
+          name: novice
           env:
             - name: KUMULUZEE_DATASOURCES0_CONNECTIONURL
               value: jdbc:postgresql://castor.db.elephantsql.com:5432/ueczpkdm
@@ -47,7 +47,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: uporabniki
+  name: novice
 spec:
   type: LoadBalancer
   ports:
@@ -55,4 +55,4 @@ spec:
       protocol: TCP
       targetPort: server
   selector:
-    app: uporabniki
+    app: novice
