@@ -1,0 +1,78 @@
+package si.fri.rso.novice.api.v1.resources;
+
+import com.kumuluz.ee.configuration.cdi.ConfigBundle;
+import com.kumuluz.ee.discovery.annotations.DiscoverService;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import org.eclipse.microprofile.metrics.annotation.Counted;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.json.JSONArray;
+import si.fri.rso.novice.api.v1.config.NoviceProperties;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.Optional;
+
+@ConfigBundle("external-api")
+@Path("/novice")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+@ApplicationScoped
+public class NoviceResource {
+
+    @Inject
+    @DiscoverService(value = "uporabniki-service", environment = "dev", version = "1.0.0")
+    private Optional<String> uporabnikHost;
+
+    @Inject
+    private NoviceProperties noviceProperties;
+
+    @GET
+    @Path("/test")
+    public void testGet() {
+        System.out.println("Calling GET test");
+    }
+
+    @Operation(description = "Send newsletter to users.", summary = "Send newsletter")
+    @APIResponses({
+            @APIResponse(responseCode = "201",
+                    description = "Newsletter sent."
+            ),
+            @APIResponse(responseCode = "405", description = "Sending error.")
+    })
+    @Counted
+    @POST
+    @Path("/poslji")
+    public Response sendEmail() throws UnirestException {
+        if (uporabnikHost.isEmpty()) {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+        }
+
+        HttpResponse<JsonNode> uporabnikiResponse = Unirest.get(uporabnikHost.get() + "/v1/uporabniki/emails")
+                .asJson();
+
+        System.out.println(uporabnikiResponse.getBody());
+
+        JSONArray uporabnikiJson = uporabnikiResponse.getBody().getArray();
+
+        for (int i = 0; i < uporabnikiJson.length(); i++) {
+            HttpResponse<String> request = Unirest.post("https://api.mailgun.net/v3/" + noviceProperties.getUrl() + "/messages")
+                    .basicAuth("api", noviceProperties.getApiKey())
+                    .field("from", noviceProperties.getSenderMail())
+                    .field("to", uporabnikiJson.getJSONObject(i).getString("email"))
+                    .field("subject", "New charging station")
+                    .field("text", "Hello " + uporabnikiJson.getJSONObject(i).getString("firstName") + " " + uporabnikiJson.getJSONObject(i).getString("lastName") + ". A new charging station has just been added!")
+                    .asString();
+        }
+
+        return Response.status(Response.Status.OK).build();
+    }
+
+}

@@ -1,0 +1,28 @@
+kumuluzee:
+  name: novice-service
+  version: 1.0.0
+  server:
+    base-url: http://localhost:8080
+    http:
+      port: 8080
+  env:
+    name: dev
+  discovery:
+    cluster: 1
+    consul:
+      agent: http://consul:8500
+  rest-client:
+    registrations:
+      - class: novice-api
+        url: http://localhost:8080/v1
+        read-timeout: 5000
+  metrics:
+    web-instrumentation:
+      - name: novice-endpoint
+        url-pattern: /v1/novice/*
+
+
+novice-config:
+  url:
+  api-key:
+  sender-mail:
