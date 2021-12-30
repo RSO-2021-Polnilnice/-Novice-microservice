@@ -2,6 +2,10 @@ package si.fri.rso.novice.api.v1.resources;
 
 import com.kumuluz.ee.configuration.cdi.ConfigBundle;
 import com.kumuluz.ee.discovery.annotations.DiscoverService;
+import com.kumuluz.ee.logs.LogManager;
+import com.kumuluz.ee.logs.Logger;
+import com.kumuluz.ee.logs.cdi.Log;
+import com.kumuluz.ee.logs.cdi.LogParams;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -20,6 +24,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Optional;
 
+@Log
 @ConfigBundle("external-api")
 @Path("/novice")
 @Produces(MediaType.APPLICATION_JSON)
@@ -27,9 +32,7 @@ import java.util.Optional;
 @ApplicationScoped
 public class NoviceResource {
 
-    @Inject
-    @DiscoverService(value = "uporabniki-service", environment = "dev", version = "1.0.0")
-    private Optional<String> uporabnikHost;
+    private static final Logger LOG = LogManager.getLogger(NoviceResource.class.getName());
 
     @Inject
     private NoviceProperties noviceProperties;
@@ -49,13 +52,9 @@ public class NoviceResource {
     })
     @Counted
     @POST
+    @Log(LogParams.METRICS)
     @Path("/poslji")
     public Response sendEmail() throws UnirestException {
-        if (uporabnikHost.isEmpty()) {
-            return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
-        }
-
-        // HttpResponse<JsonNode> uporabnikiResponse = Unirest.get(uporabnikHost.get() + "/v1/uporabniki/emails").asJson();
         HttpResponse<JsonNode> uporabnikiResponse = Unirest.get("http://uporabniki-instance:8080/v1/uporabniki/emails").asJson();
 
         System.out.println(uporabnikiResponse.getBody());

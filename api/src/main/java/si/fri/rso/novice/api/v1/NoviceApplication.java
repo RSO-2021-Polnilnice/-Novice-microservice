@@ -14,7 +14,6 @@ import org.eclipse.microprofile.openapi.annotations.servers.Server;
         contact = @Contact(email = "rso2021jklk@gmail.com"),
         license = @License(name = "dev"), description = "API for sending newsletter."),
         servers = @Server(url = "http://20.83.140.172:8081/"))
-@RegisterService(value = "novice-service", ttl = 20, pingInterval = 15, environment = "dev", version = "1.0.0", singleton = false)
 @ApplicationPath("/v1")
 public class NoviceApplication extends Application {
 
