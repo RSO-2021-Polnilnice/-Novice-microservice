@@ -55,12 +55,14 @@ public class NoviceResource {
     @Log(LogParams.METRICS)
     @Path("/poslji")
     public Response sendEmail() throws UnirestException {
-        HttpResponse<JsonNode> uporabnikiResponse = Unirest.get("http://uporabniki-instance:8080/v1/uporabniki/emails").asJson();
+        //HttpResponse<JsonNode> uporabnikiResponse = Unirest.get("http://uporabniki-instance:8080/v1/uporabniki/emails").asJson();
+        HttpResponse<JsonNode> uporabnikiResponse = Unirest.get(noviceProperties.getUporabnikiUrl() + "/v1/uporabniki/emails").asJson();
 
         System.out.println(uporabnikiResponse.getBody());
 
         JSONArray uporabnikiJson = uporabnikiResponse.getBody().getArray();
 
+        System.out.println(noviceProperties.getUporabnikiUrl());
         System.out.println(noviceProperties.getUrl());
         System.out.println(noviceProperties.getApiKey());
         System.out.println(noviceProperties.getSenderMail());

@@ -21,6 +21,9 @@ public class NoviceProperties {
     @ConfigValue(watch = true)
     private String receiverMail;
 
+    @ConfigValue(watch = true)
+    private String uporabnikiUrl;
+
     public void setUrl(String url) {
         this.url = url;
     }
@@ -51,5 +54,13 @@ public class NoviceProperties {
 
     public String getReceiverMail() {
         return receiverMail;
+    }
+
+    public void setUporabnikiUrl(String uporabnikiUrl) {
+        this.uporabnikiUrl = uporabnikiUrl;
+    }
+
+    public String getUporabnikiUrl() {
+        return uporabnikiUrl;
     }
 }
