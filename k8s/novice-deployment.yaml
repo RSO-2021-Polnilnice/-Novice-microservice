@@ -13,7 +13,7 @@ spec:
         app: novice
     spec:
       containers:
-        - image: rso2021jklk/novice:2021-11-21-23-02-18
+        - image: rso2021jklk/novice:2022-01-02-09-27-47
           name: novice
           ports:
             - containerPort: 8080

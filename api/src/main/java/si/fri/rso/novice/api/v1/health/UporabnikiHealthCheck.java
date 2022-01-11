@@ -20,8 +20,7 @@ public class UporabnikiHealthCheck implements HealthCheck {
     @Override
     public HealthCheckResponse call() {
         try {
-
-            HttpURLConnection connection = (HttpURLConnection) new URL(noviceProperties.getUporabnikiUrl()).openConnection();
+            HttpURLConnection connection = (HttpURLConnection) new URL(noviceProperties.getUporabnikiUrl() + "v1/uporabniki").openConnection();
             connection.setRequestMethod("HEAD");
 
             if (connection.getResponseCode() == 200) {
